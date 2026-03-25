@@ -1,7 +1,12 @@
 import json
+import os
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
+from dotenv import load_dotenv  # Add this import
 from agent import call_openrouter, search_membrain, save_memory, manage_local_file, SYSTEM_PROMPT, whatsapp_tool, facebook_tool
+
+# Load environment variables
+load_dotenv()
 
 # Global state
 chat_history = []
@@ -9,6 +14,13 @@ chat_history = []
 def init_chat_history():
     global chat_history
     print("Initializing chat history...")
+    
+    # Check if API keys are loaded
+    if not os.getenv("OPENROUTER_API_KEY"):
+        print("⚠️  WARNING: OPENROUTER_API_KEY not set!")
+    if not os.getenv("MEMBRAIN_API_KEY"):
+        print("⚠️  WARNING: MEMBRAIN_API_KEY not set!")
+    
     current_files = manage_local_file("list", ".")
     db_context = search_membrain("user profile, hackathon, clawmind, ishan, preferences")
 
@@ -28,6 +40,25 @@ class ChatHandler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Methods', 'POST, OPTIONS')
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
         self.end_headers()
+
+    def do_GET(self):
+        # Add a simple health check endpoint
+        if self.path == '/health' or self.path == '/':
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Access-Control-Allow-Origin', '*')
+            self.end_headers()
+            health_status = {
+                "status": "healthy",
+                "service": "ClawMind Agent API",
+                "openrouter_configured": bool(os.getenv("OPENROUTER_API_KEY")),
+                "membrain_configured": bool(os.getenv("MEMBRAIN_API_KEY")),
+                "endpoints": ["POST /api/chat", "GET /health", "GET /"]
+            }
+            self.wfile.write(json.dumps(health_status).encode('utf-8'))
+        else:
+            self.send_response(404)
+            self.end_headers()
 
     def do_POST(self):
         global chat_history
@@ -65,13 +96,10 @@ class ChatHandler(BaseHTTPRequestHandler):
                     elif action == "remember":
                         res = save_memory(decision.get("fact"), decision.get("tags", []))
                         chat_history.append({"role": "system", "content": f"SAVE STATUS: {res}"})
-                        # Also let the frontend know we remembered something? 
-                        # We just let it loop and naturally reply.
                     elif action == "file_system":
                         res = manage_local_file(decision.get("action_type"), decision.get("path"), decision.get("content"))
                         chat_history.append({"role": "system", "content": f"FILE RESULT: {res}"})
                     elif action == "whatsapp":
-                        # Auto-proceed for now since we are in API mode
                         res = whatsapp_tool(decision.get("action_type"), decision.get("contact"), decision.get("message"))
                         chat_history.append({"role": "system", "content": f"WHATSAPP RESULT: {res}"})
                     elif action == "facebook":
@@ -100,8 +128,12 @@ class ChatHandler(BaseHTTPRequestHandler):
 def run(server_class=HTTPServer, handler_class=ChatHandler, port=8000):
     server_address = ('', port)
     httpd = server_class(server_address, handler_class)
-    print(f"Starting API server on port {port}...")
+    print(f"🚀 Starting ClawMind API server on port {port}...")
+    print(f"📍 Health check: http://localhost:{port}/health")
+    print(f"📍 Chat endpoint: POST http://localhost:{port}/api/chat")
     httpd.serve_forever()
 
 if __name__ == '__main__':
-    run()
+    # Use PORT environment variable for Render compatibility
+    port = int(os.getenv('PORT', 8000))
+    run(port=port)

@@ -1,0 +1,10 @@
+.env
+__pycache__/
+*.pyc
+*.log
+*.json
+!requirements.json
+snapshot_*.json
+venv/
+env/
+.DS_Store

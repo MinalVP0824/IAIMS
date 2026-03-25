@@ -10,7 +10,7 @@ import time
 import webbrowser
 from datetime import datetime
 from collections import defaultdict
-
+import os
 import networkx as nx
 import numpy as np
 import requests
@@ -18,7 +18,7 @@ from flask import Flask, render_template_string
 from flask_sock import Sock
 
 # Membrain config
-MEMBRAIN_API_KEY  = "mb_live_24j8Zn-9hTCSqMVgUhDeTtyVVfBVc1v1WBKla8WHhU8"
+MEMBRAIN_API_KEY = os.getenv("MEMBRAIN_API_KEY")
 MEMBRAIN_BASE_URL = "https://mem-brain-api-cutover-v4-production.up.railway.app/api/v1"
 MEMBRAIN_HEADERS  = {
     "X-API-Key":    MEMBRAIN_API_KEY,

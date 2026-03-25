@@ -493,7 +493,7 @@ def whatsapp_tool(action_type, contact=None, message=None, call_type="audio"):
 load_dotenv()  # If you want to use .env file later
 
 # OpenRouter Configuration (replace Groq)
-OPENROUTER_API_KEY = ""  # Get from https://openrouter.ai/keys
+OPENROUTER_API_KEY = os.getenv("OPENROUTER_API_KEY")  # Get from https://openrouter.ai/keys
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Choose your model (free options available)
@@ -502,10 +502,10 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 # - "meta-llama/llama-3.2-3b-instruct" (Llama 3.2 3B, faster)
 # - "microsoft/phi-3-mini-128k-instruct" (Phi-3 Mini)
 # - "google/gemini-flash-1.5" (Gemini Flash)
-MODEL = "meta-llama/llama-3.3-70b-instruct"
+MODEL = os.getenv("MODEL", "meta-llama/llama-3.3-70b-instruct")
 
 # Membrain Configuration (unchanged)
-MEMBRAIN_API_KEY = ""
+MEMBRAIN_API_KEY = os.getenv("MEMBRAIN_API_KEY")
 MEMBRAIN_BASE_URL = "https://mem-brain-api-cutover-v4-production.up.railway.app/api/v1"
 
 # Headers for OpenRouter
