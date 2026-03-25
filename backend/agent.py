@@ -493,7 +493,7 @@ def whatsapp_tool(action_type, contact=None, message=None, call_type="audio"):
 load_dotenv()  # If you want to use .env file later
 
 # OpenRouter Configuration (replace Groq)
-OPENROUTER_API_KEY = "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"  # Get from https://openrouter.ai/keys
+OPENROUTER_API_KEY = ""  # Get from https://openrouter.ai/keys
 OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 
 # Choose your model (free options available)
@@ -505,7 +505,7 @@ OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
 MODEL = "meta-llama/llama-3.3-70b-instruct"
 
 # Membrain Configuration (unchanged)
-MEMBRAIN_API_KEY = "mb_live_24j8Zn-9hTCSqMVgUhDeTtyVVfBVc1v1WBKla8WHhU8"
+MEMBRAIN_API_KEY = ""
 MEMBRAIN_BASE_URL = "https://mem-brain-api-cutover-v4-production.up.railway.app/api/v1"
 
 # Headers for OpenRouter
